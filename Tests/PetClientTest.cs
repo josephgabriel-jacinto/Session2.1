@@ -34,7 +34,7 @@ namespace ApiAutomationSession2._1.Tests
         {
             foreach(var data in CleanUpList)
             {
-                var httpResponse = await httpClient.DeleteAsync(GetUrl($"{PetEndpoint}/{data.Id}"));
+                var httpResponse = await SendAsyncFunction(HttpMethod.Delete, $"{PetEndpoint}/{data.Id}");
             }
         }
 
