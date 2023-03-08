@@ -43,14 +43,19 @@ namespace ApiAutomationSession2._1.Tests
         public async Task PutPetMethod()
         {
             #region CREATE PET OBJECT
+
+            //instantiate photoUrls and add to photoUrl list
             List<string> photoUrls = new List<string>();
             photoUrls.Add("sample.url.1");
 
+            //instantiate tag and add to tags list
             List<Tag> tags = new List<Tag>();
             tags.Add(new Tag(1, "DogTag1"));
             
+            //instantiate category
             Category category = new Category(1, "Dog");
 
+            //instantiate Pet
             Pet newPet = new Pet()
             {
                 Id = 100021,
@@ -59,25 +64,36 @@ namespace ApiAutomationSession2._1.Tests
                 PhotoUrls = photoUrls,
                 Tags = tags,
                 Status = "Available"
-
             };
 
             //send post request
             await SendAsyncFunction(HttpMethod.Post,PetEndpoint,newPet);
             #endregion
 
+
             #region GET NEWLY CREATED PET OBJECT
+
+            //send get request
             var getResponse = await SendAsyncFunction(HttpMethod.Get, $"{PetEndpoint}/{newPet.Id}");
+
+            //set retrieved pet to petRetrived variable
             var petRetrieved = JsonConvert.DeserializeObject<Pet>(getResponse.Content.ReadAsStringAsync().Result);
+            
             #endregion
 
+            
             #region UPDATE PET OBJECT
+
+            //update category value
             category.Name = "Mammal";
+
+            //add another photourls value
             photoUrls.Add("sample.url.2");
 
-            Tag newTag = new Tag(2, "DogTag2");
-            tags.Add(newTag);
+            //add another Tag value
+            tags.Add(new Tag(2, "DogTag2"));
 
+            //instantiate Pet object for update
             Pet updatedPetData = new Pet()
             {
                 Id = petRetrieved.Id,
@@ -88,11 +104,14 @@ namespace ApiAutomationSession2._1.Tests
                 Status = "Unavailable"
             };
 
+            //send put request
             var putResponse = await SendAsyncFunction(HttpMethod.Put, PetEndpoint, updatedPetData);
             var putStatusCode = putResponse.StatusCode;
             #endregion
 
             #region GET PET OBJECT AFTER UPDATED
+
+            //send get request after update request
             var getAfterUpdateResponse = await SendAsyncFunction(HttpMethod.Get, $"{PetEndpoint}/{petRetrieved.Id}");
             var getRetrievedAfterUpdate = JsonConvert.DeserializeObject<Pet>(getAfterUpdateResponse.Content.ReadAsStringAsync().Result);
             #endregion
