@@ -124,6 +124,12 @@ namespace ApiAutomationSession2._1.Tests
             Assert.AreEqual(petRetrieved.PhotoUrls.ToList().Count(), latestUpdatedPet.PhotoUrls.ToList().Count(), "PhotoUrls are not updated successfully");
             Assert.AreEqual(petRetrieved.Tags.ToList().Count(), latestUpdatedPet.Tags.ToList().Count(), "Tags are not updated successfully");
             Assert.IsTrue(petRetrieved.Status.Equals(latestUpdatedPet.Status), "Status is not updated successfully");
+
+            for (int ctr = 0; ctr < petRetrieved.PhotoUrls.Count; ctr++)
+                Assert.IsTrue(petRetrieved.PhotoUrls[ctr].Equals(latestUpdatedPet.PhotoUrls[ctr]), "PhotoUrl value is not updated successfully");
+
+            for (int ctr = 0; ctr < petRetrieved.Tags.Count; ctr++)
+                Assert.IsTrue(petRetrieved.Tags[ctr].Name.Equals(latestUpdatedPet.Tags[ctr].Name), "Tag name is not updated successfully");
             #endregion
         }
     }
