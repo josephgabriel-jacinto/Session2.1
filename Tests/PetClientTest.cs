@@ -34,7 +34,7 @@ namespace ApiAutomationSession2._1.Tests
         {
             foreach(var data in CleanUpList)
             {
-                var httpResponse = await SendAsyncFunction(HttpMethod.Delete, $"{PetEndpoint}/{data.Id}");
+                await httpClient.DeleteAsync(GetURI($"{PetEndpoint}/{data.Id}"));
             }
         }
 
@@ -65,14 +65,19 @@ namespace ApiAutomationSession2._1.Tests
                 Status = "Available"
             };
 
+            //convert newPet to json for post request body
+            var request = JsonConvert.SerializeObject(newPet);
+            var postRequest = new StringContent(request, Encoding.UTF8, "application/json");
+
             //send post request
-            await SendAsyncFunction(HttpMethod.Post,PetEndpoint,newPet);
+            await httpClient.PostAsync(GetUrl(PetEndpoint), postRequest);
+            //await SendAsyncFunction(HttpMethod.Post,PetEndpoint,newPet);
             #endregion
 
             #region GET NEWLY CREATED PET OBJECT
             //send get request
-            var getResponse = await SendAsyncFunction(HttpMethod.Get, $"{PetEndpoint}/{newPet.Id}");
-
+            var getResponse = await httpClient.GetAsync(GetURI($"{PetEndpoint}/{newPet.Id}"));
+            
             //set retrieved pet to petRetrived variable
             var petRetrieved = JsonConvert.DeserializeObject<Pet>(getResponse.Content.ReadAsStringAsync().Result);
             #endregion
@@ -92,16 +97,20 @@ namespace ApiAutomationSession2._1.Tests
             petRetrieved.Tags.Add(new Tag(2, "DogTag2"));            
 
             //update status value
-            petRetrieved.Status = "Unavailable";                     
+            petRetrieved.Status = "Unavailable";
+
+            //convert petRetrieved to json for put request body
+            request = JsonConvert.SerializeObject(petRetrieved);
+            var putRequest = new StringContent(request, Encoding.UTF8, "application/json");
 
             //send put request
-            var putResponse = await SendAsyncFunction(HttpMethod.Put, PetEndpoint, petRetrieved);
+            var putResponse = await httpClient.PutAsync(GetUrl(PetEndpoint), putRequest);
             var putStatusCode = putResponse.StatusCode;
             #endregion
 
             #region GET PET OBJECT AFTER UPDATED
             //send get request after update request
-            var afterUpdateResponse = await SendAsyncFunction(HttpMethod.Get, $"{PetEndpoint}/{petRetrieved.Id}");
+            var afterUpdateResponse = await httpClient.GetAsync(GetURI($"{PetEndpoint}/{petRetrieved.Id}"));
             var latestUpdatedPet = JsonConvert.DeserializeObject<Pet>(afterUpdateResponse.Content.ReadAsStringAsync().Result);
             #endregion
 
@@ -117,34 +126,5 @@ namespace ApiAutomationSession2._1.Tests
             Assert.IsTrue(petRetrieved.Status.Equals(latestUpdatedPet.Status), "Status is not updated successfully");
             #endregion
         }
-
-
-
-        ///<summary>
-        /// SendAsync
-        /// reusable method 
-        /// </summary>
-        private async Task<HttpResponseMessage> SendAsyncFunction(HttpMethod method, string url, Pet petData = null)
-        {
-            HttpRequestMessage httpRequestMessage = new HttpRequestMessage();
-
-            httpRequestMessage.Method = method;
-            httpRequestMessage.RequestUri = GetURI(url);
-            httpRequestMessage.Headers.Add("Accept", "application/json");
-
-            if(petData != null)
-            {
-                var request = JsonConvert.SerializeObject(petData);
-                httpRequestMessage.Content = new StringContent(request, Encoding.UTF8, "application/json");
-            }
-
-            var httpResponse = await httpClient.SendAsync(httpRequestMessage);
-
-            return httpResponse;
-        }
-
-
-
-
     }
 }
