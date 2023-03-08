@@ -100,13 +100,14 @@ namespace ApiAutomationSession2._1.Tests
             //add to clean up list
             CleanUpList.Add(getRetrievedAfterUpdate);
 
-            //assertions
+            #region ASSERTIONS
             Assert.AreEqual(HttpStatusCode.OK, putStatusCode, "Status Code is not equal to 200");
             Assert.IsTrue(getRetrievedAfterUpdate.Name.Equals(updatedPetData.Name), "Name is not updated successfully");
             Assert.IsTrue(getRetrievedAfterUpdate.Category.Name.Equals(updatedPetData.Category.Name), "Category Name is not updated successfully");
             Assert.AreEqual(getRetrievedAfterUpdate.PhotoUrls.ToList().Count(), updatedPetData.PhotoUrls.ToList().Count(), "PhotoUrls are not updated successfully");
             Assert.AreEqual(getRetrievedAfterUpdate.Tags.ToList().Count(), updatedPetData.Tags.ToList().Count(), "Tags are not updated successfully");
             Assert.IsTrue(getRetrievedAfterUpdate.Status.Equals(updatedPetData.Status), "Status is not updated successfully");
+            #endregion
         }
 
 
