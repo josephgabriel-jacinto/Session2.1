@@ -43,7 +43,6 @@ namespace ApiAutomationSession2._1.Tests
         public async Task PutPetMethod()
         {
             #region CREATE PET OBJECT
-
             //instantiate photoUrls and add to photoUrl list
             List<string> photoUrls = new List<string>();
             photoUrls.Add("sample.url.1");
@@ -70,62 +69,52 @@ namespace ApiAutomationSession2._1.Tests
             await SendAsyncFunction(HttpMethod.Post,PetEndpoint,newPet);
             #endregion
 
-
             #region GET NEWLY CREATED PET OBJECT
-
             //send get request
             var getResponse = await SendAsyncFunction(HttpMethod.Get, $"{PetEndpoint}/{newPet.Id}");
 
             //set retrieved pet to petRetrived variable
             var petRetrieved = JsonConvert.DeserializeObject<Pet>(getResponse.Content.ReadAsStringAsync().Result);
-            
             #endregion
 
-            
             #region UPDATE PET OBJECT
-
+            //instantiate Pet object for update
             //update category value
-            category.Name = "Mammal";
+            petRetrieved.Category.Name = "Mammal";
 
             //add another photourls value
-            photoUrls.Add("sample.url.2");
+            petRetrieved.PhotoUrls.Add("sample.url.2");
+
+            //update name value
+            petRetrieved.Name = "Ceddy";
 
             //add another Tag value
-            tags.Add(new Tag(2, "DogTag2"));
+            petRetrieved.Tags.Add(new Tag(2, "DogTag2"));            
 
-            //instantiate Pet object for update
-            Pet updatedPetData = new Pet()
-            {
-                Id = petRetrieved.Id,
-                Category = category,
-                Name = "Ceddy",
-                PhotoUrls = photoUrls,
-                Tags = tags,
-                Status = "Unavailable"
-            };
+            //update status value
+            petRetrieved.Status = "Unavailable";                     
 
             //send put request
-            var putResponse = await SendAsyncFunction(HttpMethod.Put, PetEndpoint, updatedPetData);
+            var putResponse = await SendAsyncFunction(HttpMethod.Put, PetEndpoint, petRetrieved);
             var putStatusCode = putResponse.StatusCode;
             #endregion
 
             #region GET PET OBJECT AFTER UPDATED
-
             //send get request after update request
-            var getAfterUpdateResponse = await SendAsyncFunction(HttpMethod.Get, $"{PetEndpoint}/{petRetrieved.Id}");
-            var getRetrievedAfterUpdate = JsonConvert.DeserializeObject<Pet>(getAfterUpdateResponse.Content.ReadAsStringAsync().Result);
+            var afterUpdateResponse = await SendAsyncFunction(HttpMethod.Get, $"{PetEndpoint}/{petRetrieved.Id}");
+            var latestUpdatedPet = JsonConvert.DeserializeObject<Pet>(afterUpdateResponse.Content.ReadAsStringAsync().Result);
             #endregion
 
             //add to clean up list
-            CleanUpList.Add(getRetrievedAfterUpdate);
+            CleanUpList.Add(latestUpdatedPet);
 
             #region ASSERTIONS
             Assert.AreEqual(HttpStatusCode.OK, putStatusCode, "Status Code is not equal to 200");
-            Assert.IsTrue(getRetrievedAfterUpdate.Name.Equals(updatedPetData.Name), "Name is not updated successfully");
-            Assert.IsTrue(getRetrievedAfterUpdate.Category.Name.Equals(updatedPetData.Category.Name), "Category Name is not updated successfully");
-            Assert.AreEqual(getRetrievedAfterUpdate.PhotoUrls.ToList().Count(), updatedPetData.PhotoUrls.ToList().Count(), "PhotoUrls are not updated successfully");
-            Assert.AreEqual(getRetrievedAfterUpdate.Tags.ToList().Count(), updatedPetData.Tags.ToList().Count(), "Tags are not updated successfully");
-            Assert.IsTrue(getRetrievedAfterUpdate.Status.Equals(updatedPetData.Status), "Status is not updated successfully");
+            Assert.IsTrue(latestUpdatedPet.Name.Equals(petRetrieved.Name), "Name is not updated successfully");
+            Assert.IsTrue(latestUpdatedPet.Category.Name.Equals(petRetrieved.Category.Name), "Category Name is not updated successfully");
+            Assert.AreEqual(latestUpdatedPet.PhotoUrls.ToList().Count(), petRetrieved.PhotoUrls.ToList().Count(), "PhotoUrls are not updated successfully");
+            Assert.AreEqual(latestUpdatedPet.Tags.ToList().Count(), petRetrieved.Tags.ToList().Count(), "Tags are not updated successfully");
+            Assert.IsTrue(latestUpdatedPet.Status.Equals(petRetrieved.Status), "Status is not updated successfully");
             #endregion
         }
 
