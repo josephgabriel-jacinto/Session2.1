@@ -110,11 +110,11 @@ namespace ApiAutomationSession2._1.Tests
 
             #region ASSERTIONS
             Assert.AreEqual(HttpStatusCode.OK, putStatusCode, "Status Code is not equal to 200");
-            Assert.IsTrue(latestUpdatedPet.Name.Equals(petRetrieved.Name), "Name is not updated successfully");
-            Assert.IsTrue(latestUpdatedPet.Category.Name.Equals(petRetrieved.Category.Name), "Category Name is not updated successfully");
-            Assert.AreEqual(latestUpdatedPet.PhotoUrls.ToList().Count(), petRetrieved.PhotoUrls.ToList().Count(), "PhotoUrls are not updated successfully");
-            Assert.AreEqual(latestUpdatedPet.Tags.ToList().Count(), petRetrieved.Tags.ToList().Count(), "Tags are not updated successfully");
-            Assert.IsTrue(latestUpdatedPet.Status.Equals(petRetrieved.Status), "Status is not updated successfully");
+            Assert.IsTrue(petRetrieved.Name.Equals(latestUpdatedPet.Name), "Name is not updated successfully");
+            Assert.IsTrue(petRetrieved.Category.Name.Equals(latestUpdatedPet.Category.Name), "Category Name is not updated successfully");
+            Assert.AreEqual(petRetrieved.PhotoUrls.ToList().Count(), latestUpdatedPet.PhotoUrls.ToList().Count(), "PhotoUrls are not updated successfully");
+            Assert.AreEqual(petRetrieved.Tags.ToList().Count(), latestUpdatedPet.Tags.ToList().Count(), "Tags are not updated successfully");
+            Assert.IsTrue(petRetrieved.Status.Equals(latestUpdatedPet.Status), "Status is not updated successfully");
             #endregion
         }
 
